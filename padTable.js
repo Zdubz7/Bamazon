@@ -1,38 +1,31 @@
-// @author: Thomas Thompson
-// @github: tomtom28
-// @comment: Homework 12 - Bamazon SQL and Node app
-
-
-// My custom function to clean/pad the sql output table
+// This function pads the SQL output table in the app.
 function padText(titleText, entryText){
   
-  // Left and Right Padding
+  // These variables are left and right padding.
   var padLeft;
   var padRight;
 
-  // Subtract text lengths
+  // This variable subtracts the lengths of the text.
   var splitLength = (titleText.length - entryText.length)/2;
 
-  // Loop through length difference to get proper padding
+ // This variable loops through the varying length difference to get the user the propper padding.
   var pad = '';
   for(var j=0; j < splitLength; j++){
     pad += ' ';
   }
-
-  // Handle odd sized lengths
+  // This section controls the odd size lengths of the padding.
   if(Number.isInteger(splitLength)){
     padLeft = pad;
     padRight = pad;
   }
   else{
     padLeft = pad;
-    padRight = pad.substring(0, pad.length-1); // remove last space
+    // This section removes the last space.
+    padRight = pad.substring(0, pad.length-1); 
   }
-
-  // Return newly padded entry for table
+// This section returns the newly padded user input for the table.
   return padLeft + entryText + padRight;
 }
 
-
-// Export to other Bamazon scripts
+// This section exports padtext to the other Bamazon scripts within the app.
 module.exports = padText;

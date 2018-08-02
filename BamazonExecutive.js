@@ -1,44 +1,45 @@
-// Require prompt node package 
+// This variable requires the promt npm node package.
 var prompt = require('prompt');
 
-// Require mySQL node package
+// This variable requires the MySQL npm node package.
 var mysql = require('mysql');
 
-// Require my homegrown table padding function
-var padText = require('./padTable.js')
+// This variable requires the table padding function.
+var padText = require('./padTable.js');
 
 
-// Link to mySQL Database
+// This variable links to the MySQL database schema.sql
 var connection = mysql.createConnection({
-    host: "localhost",
-    port: 8889,
-    user: "root", //Your username
-    password: "Password123", //Your password
-    database: "Bamazon"
+  host: "localhost",
+  port: 8889,
+  // This is your username
+  user: "root",
+  // This is your password.
+  password: "yourpassword1234",
+  database: "Bamazon"
 });
 
-// Connect to Database
-connection.connect(function(err) {
+// This variable connects the user to the MySQL database schema.sql
+connection.connect(function (err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId);
 
-  // ------------------------------ Nest Switch Case into here (to be shown after connected) -------------------------------
-  // Prompt user with options (note I could have used inquier to make a list, but the assignment seemed to prefer prompt)
+  // This variable prompts the user with different options of what they would like to do. I used prompt here instead of the inquierer package.
   prompt.start();
 
-  // Display Menu
-  console.log('\nBamazon Peak Leadership Menu'); // <---- just beating a dead horse at this point ;)
-  console.log('------------------------------')
-  console.log('Select a (numeric) option.')
+  // This section displays the menu of options to the user.
+  console.log('\nBamazon Peak Leadership Menu');
+  console.log('------------------------------');
+  console.log('Select a (numeric) option.');
   console.log('1. View Product Sales by Department');
   console.log('2. Create New Department');
 
   prompt.get(['menuSelection'], function (err, result) {
-    
-    // Switch Case for different options
+
+    // This variable switches cases for different options in the menu.
     var menuSelection = parseInt(result.menuSelection);
 
-    switch(menuSelection) {
+    switch (menuSelection) {
       case 1:
         console.log('\nView Product Sales by Department...');
         viewSalesByDept();
@@ -51,106 +52,98 @@ connection.connect(function(err) {
 
       default:
         console.log('Not a vaild entry. Aborting.');
-        connection.end(); // end the script/connection
+        connection.end();
+        // This is the end of the current script/connection.
     }
   });
 
-}); // end database connection
-    
+});
+// This is the end of the database connection.
 
 
-// =================== Functions to be used inside the switch case ===================
+// This function lets the customer view the products for sale by the department.
+function viewSalesByDept() {
 
+  // This variable is the query for all of the department table.
+  connection.query('SELECT * FROM Departments', function (err, res) {
 
-// View Product Sales by Department
-function viewSalesByDept(){
+    // This section handles any error.
+    if (err) throw err;
 
-  // Query for all of the Department Table
-  connection.query('SELECT * FROM Departments', function(err, res){
-  
-    // Error Handler
-    if(err) throw err;
-
-    // Show User message
-    // Set up table header
+    // This section shows the user a message and sets up the table header.
     console.log('\n' + '  ID  |  Department Name  |  OverHead Costs |  Product Sales  |  Total Profit');
-    console.log('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -')
-    
-    // Loop through database and show all items
-    for(var i = 0; i < res.length; i++){
+    console.log('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -');
 
-      // ---------- Add in padding for table ----------
-      var departmentID = res[i].DepartmentID + ''; // convert to string
+    // This section loops through the database and shows all of the items available.
+    for (var i = 0; i < res.length; i++) {
+
+      // This variable adds in padding for the departments and converts the department ID into a string.
+      var departmentID = res[i].DepartmentID + '';
       departmentID = padText("  ID  ", departmentID);
 
-      var departmentName = res[i].DepartmentName + ''; // convert to string
+      // This variable turns the department name into a string.
+      var departmentName = res[i].DepartmentName + '';
       departmentName = padText("  Department Name  ", departmentName);
 
-      // On the fly calculation for profit
+      // This section creates a calculation for the profit.
       var overHeadCost = res[i].OverHeadCosts.toFixed(2);
       var totalSales = res[i].TotalSales.toFixed(2);
       var totalProfit = (parseFloat(totalSales) - parseFloat(overHeadCost)).toFixed(2);
 
-
-      // Add $ signs to values
+      // This section adds dollar sign ($) values to overheadcost, totalsales, and totalprofit.
       overHeadCost = '$' + overHeadCost;
       totalSales = '$' + totalSales;
       totalProfit = '$' + totalProfit;
 
-      // Padding for table
+      // This section adds padding for the overheadcost and total sales table.
       overHeadCost = padText("  OverHead Costs ", overHeadCost);
       totalSales = padText("  Product Sales  ", totalSales);
-      
-      // ----------------------------------------------
 
-      // Log table entry
+      // This section logs the table entry from the user for each variable.
       console.log(departmentID + '|' + departmentName + '|' + overHeadCost + '|' + totalSales + '|  ' + totalProfit);
     }
 
-    connection.end(); // end the script/connection
-
+    connection.end();
+    // This is the end of the script/connection.
   });
 
 }
+// This function adds a new department to the table.
+function addNewDept() {
 
-
-
-// ---------------------------------------------------------------------------------
-
-
-// Add New Department
-function addNewDept(){
-
-  // Prompt user for new item details
+  // This section promots the user for new details about an item.
   prompt.start();
   console.log('\nComplete the new department details:');
   prompt.get(['DepartmentName', 'OverHeadCosts', 'TotalSales'], function (err, result) {
 
-    // Collect/parse variables
+    // This section collects/parses the variables departmentname, overheadcost, and total sales and shows the results.
     var departmentName = result.DepartmentName;
     var overHeadCost = result.OverHeadCosts;
     var totalSales = result.TotalSales;
 
-    // Update Database
+    // This section updates the database for variables departmentname, overheadcosts, and totalsales.
     connection.query('INSERT INTO Departments SET ?', {
       DepartmentName: departmentName,
       OverHeadCosts: overHeadCost,
       TotalSales: totalSales
-    }, function(err, res){
+    }, function (err, res) {
 
-      // Slighly more refined Error Handler
-      if(err){
+      // This section is a refines error handler.
+      if (err) {
         console.log('\nSorry. The SQL database could not be updated.\n' +
           'Please ensure you entered the overhead and sales as numbers!');
-        connection.end(); // end the script/connection
-      }
-      else{
-        console.log('\nNew Department updated successfully! Very customer centric!'); // last inside joke, i swear :)
-        connection.end(); // end the script/connection
+        connection.end();
+        // This is the end of the script/connection.
+      } else {
+        console.log('\nNew Department updated successfully! Very customer centric!');
+        connection.end();
+        // This is the end of the script/connection.
       }
 
-    }); // end connection
+    });
+    // This is the final end of the connection.
 
-  }); // end prompt
- 
+  });
+  // This is the final end of the prompt.
+
 }

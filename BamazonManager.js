@@ -1,62 +1,57 @@
-// @author: Thomas Thompson
-// @github: tomtom28
-// @comment: Homework 12 - Bamazon SQL and Node app
-
-
-
-// Require prompt node package 
+// This variable requires the promt npm node package.
 var prompt = require('prompt');
 
-// Require mySQL node package
+// This variable requires the MySQL npm node package.
 var mysql = require('mysql');
 
-// Require my homegrown table padding function
-var padText = require('./padTable.js')
+// This variable requires the table padding function.
+var padText = require('./padTable.js');
 
-
-// Link to mySQL Database
+// This variable links to the MySQL database schema.sql
 var connection = mysql.createConnection({
     host: "localhost",
     port: 8889,
     user: "root", //Your username
-    password: "Password123", //Your password
+    password: "yourpassword1234", //Your password
     database: "Bamazon"
 });
 
-// Connect to Database
+// This variable connects the user to the MySQL database schema.sql
 connection.connect(function(err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId);
 
-  // ------------------------------ Nest Switch Case into here (to be shown after connected) -------------------------------
-  // Prompt user with options (note I could have used inquier to make a list, but the assignment seemed to prefer prompt)
+  // This variable prompts the user with different options of what they would like to do. I used prompt here instead of the inquierer package.
   prompt.start();
 
-  // Display Menu
-  console.log('\nBamazon Shift Manager Menu'); // <---- Oh the irony! The sweet, sweet irony!
-  console.log('----------------------------')
-  console.log('Select a (numeric) option.')
+  // This section displays the menu of options to the user.
+  console.log('\nBamazon Shift Manager Menu');
+  console.log('----------------------------');
+  console.log('Select a (numeric) option.');
   console.log('1. View Products for Sale');
   console.log('2. View Low Inventory');
   console.log('3. Add to Inventory');
   console.log('4. Add New Product');
 
   prompt.get(['menuSelection'], function (err, result) {
-    
-    // Switch Case for different options
+
+    // This variable switches the case so the user has varying options.
     var menuSelection = parseInt(result.menuSelection);
 
     switch(menuSelection) {
       case 1:
           console.log('\nView Products for Sale...');
-          viewProducts(function(){}); // note that this function uses a callback :)
-          connection.end(); // end the script/connection
+          // This function uses a callback.
+          viewProducts(function(){});
+          connection.end(); 
+          // This is the end of the script/connection.
           break;
       
       case 2:
           console.log('\nView Low Inventory...');
           viewLowInventory();
-          connection.end(); // end the script/connection
+          connection.end(); 
+          // This is the end of the script/connection.
           break;
       
       case 3:
@@ -71,212 +66,191 @@ connection.connect(function(err) {
 
       default:
         console.log('Not a vaild entry. Aborting.');
-        connection.end(); // end the script/connection
+        // This is the end of the script/connection.
+        connection.end(); 
 
-    } // end switch case
-    
-  }); // end switch case prompt
+    } 
+    // This is the end of the switch case, which is the menu selection.
+  }); 
+// This is the end of the switch case menu selection prompt.
+}); 
+// This is the end of the connection
 
-}); // end connection
-
-
-
-// =================== Functions to be used inside the switch case ===================
-
-
-// View Products for sale (complete with a callback function)
+// This function allows the viewing of products for sale, which is completed with a callback function.
 function viewProducts(callback){
 
-  // Display All Items inside Database
+  // This variable displays all of the items inside of the database.
   connection.query('SELECT * FROM Products', function(err, res){
-  
-    // Error Handler
+
+    // This handles any errors.
     if(err) throw err;
+    // This shows the user a message that the total fc inventory is below.
+    console.log('Total FC Inventory is below...\n'); 
 
-    // Show User message
-    console.log('Total FC Inventory is below...\n'); // another Easter Egg ;)
-
-    // Set up table header
+    // This section sets up the table header.
     console.log('  ID  |      Product Name      |  Department Name  |   Price  | In Stock');
-    console.log('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ')
-    
-    // Loop through database and show all items
+    console.log('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ');
+
+    // This section loops through the database and shows all of the items.
     for(var i = 0; i < res.length; i++){
 
-      // ---------- Add in padding for table ----------
-      var itemID = res[i].ItemID + ''; // convert to string
+      // This section adds padding for the table and converts the item id to a string.
+      var itemID = res[i].ItemID + '';
       itemID = padText("  ID  ", itemID);
-
-      var productName = res[i].ProductName + ''; // convert to string
+      // This variable converts all of the product names to a string.
+      var productName = res[i].ProductName + ''; 
       productName = padText("      Product Name      ", productName);
-
-      var departmentName = res[i].DepartmentName + ''; // convert to string
+      // This variable converts all of the department names into a string.
+      var departmentName = res[i].DepartmentName + ''; 
       departmentName = padText("  Department Name  ", departmentName);
-
-      var price = '$' + res[i].Price.toFixed(2) + ''; // convert to string
+      // This variable converts all of the prices into a string.
+      var price = '$' + res[i].Price.toFixed(2) + ''; 
       price = padText("   Price  ", price);
-
-      var quantity = res[i].StockQuantity + ''; // convert to string (no need to pad)
-      // ----------------------------------------------
-
-      // Log table entry
+      // This variable concerts all o the stock quantity into a string
+      var quantity = res[i].StockQuantity + ''; 
+      
+      // This section logs the users table entry for the itemid, the productname, the departmentname, the price, and the quanity.
       console.log(itemID + '|' + productName + '|' + departmentName + '|' + price + '|    ' + quantity);
     }
-    // Callback function (for use in case 3 to counter asynch behavior)
+    // This is a callback function in use for case 3 to counter any asynchronous behavior.
     callback();
   });
 }
-
-// ---------------------------------------------------------------------------------
-
-// View Low Inventory
+// This function allows the user to view the low inventory.
 function viewLowInventory(){
-   // Display All Items inside Database lower than 5 in stock
+  // This variable displays all of the items inside of the database lower than 5 items in stock.
   connection.query('SELECT * FROM Products WHERE StockQuantity < 5', function(err, res){
-  
+  // This handles any errors.
     // Error Handler
     if(err) throw err;
-
-    // Show User message
+    // This shows the user a message if any of the items in the inventory is less than 5.
     console.log('Inventory for Items < 5 In Stock is below...\n');
-
-    // Set up table header
+    // This console.log sets up the table header for the ID, productname, departmentname, price, and instock.
     console.log('  ID  |      Product Name      |  Department Name  |   Price  | In Stock');
-    console.log('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ')
-    
-    // Loop through database and show all items
+    console.log('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ');
+    // This section loops through the database and shows all of the items.
     for(var i = 0; i < res.length; i++){
 
-      // ---------- Add in padding for table ----------
-      var itemID = res[i].ItemID + ''; // convert to string
+      // This variable adds padding for the table and converts the itemid into a string.
+      var itemID = res[i].ItemID + ''; 
       itemID = padText("  ID  ", itemID);
-
-      var productName = res[i].ProductName + ''; // convert to string
+      // This variable converts product name into a string.
+      var productName = res[i].ProductName + ''; 
       productName = padText("      Product Name      ", productName);
-
-      var departmentName = res[i].DepartmentName + ''; // convert to string
+      // This variable converts the department name into a string.
+      var departmentName = res[i].DepartmentName + ''; 
       departmentName = padText("  Department Name  ", departmentName);
-
-      var price = '$' + res[i].Price.toFixed(2) + ''; // convert to string
+      // This variable converts the price into a string.
+      var price = '$' + res[i].Price.toFixed(2) + '';
       price = padText("   Price  ", price);
+      // This variable converts stockquantity into a string, there is no need for padding here.
+      var quantity = res[i].StockQuantity + ''; 
 
-      var quantity = res[i].StockQuantity + ''; // convert to string (no need to pad)
-      // ----------------------------------------------
-
-      // Log table entry
+      // This logs the table entries to the console for itemID, productname, departmentname, price, and quantity.
       console.log(itemID + '|' + productName + '|' + departmentName + '|' + price + '|    ' + quantity);
     }
 
-    // Yet another Easter Egg ;)
-    console.log('\nBetter get stowing!')
+    console.log('\nBetter get stowing!');
   });
 }
-
-
-// ---------------------------------------------------------------------------------
-
-// Add to Inventory
+// This function adds to the inventory.
 function addInventory(){
-  
-  // Running the View Products Function (case 1) and then asking user for unput after callback
+  // This function runs the view products function, which is case 1, and asks the user for input after the callback occurs.
   viewProducts(function(){
-
-    // Prompt user for re-stock item
+    // This variable prompts the user if they want to restock an item.
     prompt.start();
     console.log('\nWhich item do you want to restock?');
     prompt.get(['restockItemID'], function (err, result) {
-      
-      // Show Item ID selected
+      // This variable shows the item's id that the user decided to restock.
       var restockItemID = result.restockItemID;
       console.log('You selected to re-stock Item # ' + restockItemID + '.');
-
-      // Prompt for how many more items
+      // This section promots the user for how many more items that they would like to restock.
       console.log('\nHow many items will you restock?');
       prompt.get(['restockCount'], function(err, result){
-        
-        //Show Restock Count selected
+        // This variable shows the restock count selected by the customer/user.
         var restockCount = result.restockCount;
         console.log('You selected to re-stock ' + restockCount + ' items.');
-        restockCount = parseInt(restockCount); // convert to integer
+        // This variable converts the variable restockcount into an integer.
+        restockCount = parseInt(restockCount);
 
         if(Number.isInteger(restockCount)){
-
-          // Query for current item inventory
+          // This variable is a query for the current item inventory that the user/customer is going to select and from where.
           connection.query('SELECT StockQuantity FROM Products WHERE ?', [{ItemID: restockItemID}], function(err, res){
-
-            // Check if the item Id was valid (i.e. something was returned from mySQL)
+            // This checks if the item ID was valid or if an item or something was returned from MySQL.
             if(res[0] == undefined){
               
               console.log('Sorry... We found no items with Item ID "' +  restockItemID + '"');
-              connection.end(); // end the script/connection
-
+              connection.end(); 
+              // This is the end of the script/connection.
             }
-            // Valid Item ID, so add Bamazon Inventory with stowing quantity <-- more Bamazon lingo ;)
+            // This section shows that the item has a valid item ID, it then adds to the Bamazon Inventory with stowing quantity.
             else{
               
               var bamazonQuantity = res[0].StockQuantity;
-              var newInventory = parseInt(bamazonQuantity) + parseInt(restockCount); // ensure integers
-
-              // Update Database with new items
+              // This section ensures the integers are good.
+              var newInventory = parseInt(bamazonQuantity) + parseInt(restockCount);
+              // This section updates the database with new items.
               connection.query('UPDATE Products SET ? WHERE ?', [{StockQuantity: newInventory}, {ItemID: restockItemID}], function(err, res){
-                if(err) throw err; // Error Handler
+                // This handles any errors.
+                if(err) throw err; 
 
-                console.log('\nInventory updated successfully! How customer-centric!') // Inside jokes for days!
-                connection.end(); // end the script/connection
+                console.log('\nInventory updated successfully! How customer-centric!'); 
+                // This is the end of the script/connection.
+                connection.end();
 
-              }); // end inventory update query
+              });
+              // This is the end of the inventory update query for the user.
             
             }
 
-          }); // end current quantity query
+          }); 
+          // This is the end of the current quantity query for the user.
         }
         else{
-          console.log('Only whole items can be added. Integers only!')
-          connection.end(); // end the script/connection
+          console.log('Only whole items can be added. Integers only!');
+          // This is the end of the script/connection. 
+          connection.end(); 
         }
 
-      }); // end prompt 2 (amount to add)
+      });
+      // This ends prompt 2 which is the amount to add.
 
-    }); // end prompt 1 (item id)
+    }); 
+    // This ends prompt 1 which is the item id.
 
   }); // end case 1 callback
 
 }
-
-
-// ---------------------------------------------------------------------------------
-
-// Add New Product
+// This function adds a new product to the table.
 function addNewProduct(){
 
-  // Prompt user for new item details
+  // This promots the user for new item details.
   prompt.start();
   console.log('\nComplete the new product details:');
   prompt.get(['ProductName', 'DepartmentName', 'Price', 'Quantity'], function (err, result) {
-
-    // Collect/parse variables
+    // This section collects / parses the variable productname, departmentname, price, and quantity.
     var productName = result.ProductName;
     var departmentName = result.DepartmentName;
     var price = result.Price;
     var quantity = result.Quantity;
-
-    // Update Database
+// This updates the database for the variables productname, departmentname, price, and stockquantity.
     connection.query('INSERT INTO Products SET ?', {
       ProductName: productName,
       DepartmentName: departmentName,
       Price: price,
       StockQuantity: quantity
     }, function(err, res){
-
-      // Slighly more refined Error Handler
+      // This is a more refined error handler.
       if(err){
         console.log('\nSorry. The SQL database could not be updated.\n' +
           'Please ensure you entered the price and quantity as numbers!');
-        connection.end(); // end the script/connection
+        connection.end();
+        // This is the end of the script/connection for entering the price and quantity.
       }
       else{
-        console.log('\nInventory updated successfully!')
-        connection.end(); // end the script/connection
+        console.log('\nInventory updated successfully!');
+        connection.end(); 
+        // This is the end of the script/connection for the inventory.
       }
 
     });

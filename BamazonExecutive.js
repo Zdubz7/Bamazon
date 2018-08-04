@@ -22,7 +22,7 @@ var connection = mysql.createConnection({
 // This variable connects the user to the MySQL database schema.sql
 connection.connect(function (err) {
   if (err) throw err;
-  console.log("connected as id " + connection.threadId);
+  console.log("You Are Connected As Id " + connection.threadId);
 
   // This variable prompts the user with different options of what they would like to do. I used prompt here instead of the inquierer package.
   prompt.start();
@@ -30,9 +30,9 @@ connection.connect(function (err) {
   // This section displays the menu of options to the user.
   console.log('\nBamazon Peak Leadership Menu');
   console.log('------------------------------');
-  console.log('Select a (numeric) option.');
-  console.log('1. View Product Sales by Department');
-  console.log('2. Create New Department');
+  console.log('Select A (Numeric) Option To Switch Menus.');
+  console.log('1. View Product Sales By Department :)');
+  console.log('2. Create A New Department :)');
 
   prompt.get(['menuSelection'], function (err, result) {
 
@@ -46,12 +46,12 @@ connection.connect(function (err) {
         break;
 
       case 2:
-        console.log('\nCreate New Department...');
+        console.log('\nCreate A New Department...');
         addNewDept();
         break;
 
       default:
-        console.log('Not a vaild entry. Aborting.');
+        console.log('Sorry, That Is Not A Vaild Character Entry. Aborting Request :( .');
         connection.end();
         // This is the end of the current script/connection.
     }
@@ -113,7 +113,7 @@ function addNewDept() {
 
   // This section promots the user for new details about an item.
   prompt.start();
-  console.log('\nComplete the new department details:');
+  console.log('\nPlease Complete The New Department Details:');
   prompt.get(['DepartmentName', 'OverHeadCosts', 'TotalSales'], function (err, result) {
 
     // This section collects/parses the variables departmentname, overheadcost, and total sales and shows the results.
@@ -130,12 +130,12 @@ function addNewDept() {
 
       // This section is a refines error handler.
       if (err) {
-        console.log('\nSorry. The SQL database could not be updated.\n' +
-          'Please ensure you entered the overhead and sales as numbers!');
+        console.log('\nIm Sorry. Unfortunately The SQL Database Could Not Be Updated :( .\n' +
+          'Please Ensure You Have Entered The Overhead And Sales As Numbers!');
         connection.end();
         // This is the end of the script/connection.
       } else {
-        console.log('\nNew Department updated successfully! Very customer centric!');
+        console.log('\nThe New Department Information Has Been Updated Successfully! Great Work! :) . ');
         connection.end();
         // This is the end of the script/connection.
       }

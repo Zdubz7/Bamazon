@@ -28,10 +28,10 @@ connection.connect(function(err) {
   console.log('\nBamazon Shift Manager Menu');
   console.log('----------------------------');
   console.log('Select a (numeric) option.');
-  console.log('1. View Products for Sale');
+  console.log('1. View Products For Sale');
   console.log('2. View Low Inventory');
-  console.log('3. Add to Inventory');
-  console.log('4. Add New Product');
+  console.log('3. Add To The Current Inventory');
+  console.log('4. Add A New Product');
 
   prompt.get(['menuSelection'], function (err, result) {
 
@@ -40,7 +40,7 @@ connection.connect(function(err) {
 
     switch(menuSelection) {
       case 1:
-          console.log('\nView Products for Sale...');
+          console.log('\nView Products For Sale...');
           // This function uses a callback.
           viewProducts(function(){});
           connection.end(); 
@@ -55,17 +55,17 @@ connection.connect(function(err) {
           break;
       
       case 3:
-        console.log('\nAdd to Inventory...');
+        console.log('\nAdd To The Current Inventory...');
         addInventory();
         break;
 
       case 4:
-        console.log('\nAdd New Product...');
+        console.log('\nAdd A New Product...');
         addNewProduct();
         break;
 
       default:
-        console.log('Not a vaild entry. Aborting.');
+        console.log('Im Sorry, That Is Not A Vaild Entry. Entry Aborted :(.');
         // This is the end of the script/connection.
         connection.end(); 
 
@@ -85,7 +85,7 @@ function viewProducts(callback){
     // This handles any errors.
     if(err) throw err;
     // This shows the user a message that the total fc inventory is below.
-    console.log('Total FC Inventory is below...\n'); 
+    console.log('The Total FC Inventory Is Listefd Below...\n'); 
 
     // This section sets up the table header.
     console.log('  ID  |      Product Name      |  Department Name  |   Price  | In Stock');
@@ -124,7 +124,7 @@ function viewLowInventory(){
     // Error Handler
     if(err) throw err;
     // This shows the user a message if any of the items in the inventory is less than 5.
-    console.log('Inventory for Items < 5 In Stock is below...\n');
+    console.log('This Is The Inventory For Items < 5 That Are In Stock Below...\n');
     // This console.log sets up the table header for the ID, productname, departmentname, price, and instock.
     console.log('  ID  |      Product Name      |  Department Name  |   Price  | In Stock');
     console.log('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ');
@@ -150,7 +150,7 @@ function viewLowInventory(){
       console.log(itemID + '|' + productName + '|' + departmentName + '|' + price + '|    ' + quantity);
     }
 
-    console.log('\nBetter get stowing!');
+    console.log('\nOh Shoot! Better Get Stowing!');
   });
 }
 // This function adds to the inventory.
@@ -159,17 +159,17 @@ function addInventory(){
   viewProducts(function(){
     // This variable prompts the user if they want to restock an item.
     prompt.start();
-    console.log('\nWhich item do you want to restock?');
+    console.log('\nWhich Item Would You Wish To Restock?');
     prompt.get(['restockItemID'], function (err, result) {
       // This variable shows the item's id that the user decided to restock.
       var restockItemID = result.restockItemID;
-      console.log('You selected to re-stock Item # ' + restockItemID + '.');
+      console.log('You Have Chosen To Re-stock Item # ' + restockItemID + '.');
       // This section promots the user for how many more items that they would like to restock.
-      console.log('\nHow many items will you restock?');
+      console.log('\nHow many Items Will You Restock?');
       prompt.get(['restockCount'], function(err, result){
         // This variable shows the restock count selected by the customer/user.
         var restockCount = result.restockCount;
-        console.log('You selected to re-stock ' + restockCount + ' items.');
+        console.log('You Have Chosen To Re-Stock ' + restockCount + ' Items.');
         // This variable converts the variable restockcount into an integer.
         restockCount = parseInt(restockCount);
 
@@ -179,7 +179,7 @@ function addInventory(){
             // This checks if the item ID was valid or if an item or something was returned from MySQL.
             if(res[0] == undefined){
               
-              console.log('Sorry... We found no items with Item ID "' +  restockItemID + '"');
+              console.log('Im Terribly Sorry... We Havent Found Any Items With Item ID "' +  restockItemID + '"');
               connection.end(); 
               // This is the end of the script/connection.
             }
@@ -194,7 +194,7 @@ function addInventory(){
                 // This handles any errors.
                 if(err) throw err; 
 
-                console.log('\nInventory updated successfully! How customer-centric!'); 
+                console.log('\nYour Inventory Has Been Updated Successfully! Great Work! :)'); 
                 // This is the end of the script/connection.
                 connection.end();
 
@@ -207,7 +207,7 @@ function addInventory(){
           // This is the end of the current quantity query for the user.
         }
         else{
-          console.log('Only whole items can be added. Integers only!');
+          console.log('Im Sorry, Only Whole Items Can Be Added. Integers Only Please! :)');
           // This is the end of the script/connection. 
           connection.end(); 
         }
@@ -226,7 +226,7 @@ function addNewProduct(){
 
   // This promots the user for new item details.
   prompt.start();
-  console.log('\nComplete the new product details:');
+  console.log('\nPlease Complete The New Product Details:');
   prompt.get(['ProductName', 'DepartmentName', 'Price', 'Quantity'], function (err, result) {
     // This section collects / parses the variable productname, departmentname, price, and quantity.
     var productName = result.ProductName;
@@ -242,13 +242,13 @@ function addNewProduct(){
     }, function(err, res){
       // This is a more refined error handler.
       if(err){
-        console.log('\nSorry. The SQL database could not be updated.\n' +
-          'Please ensure you entered the price and quantity as numbers!');
+        console.log('\nIm Sorry :(. Unfortunately, The SQL Database Could Not Be Updated At This Time.\n' +
+          'Please Make Sure That You Have Entered The Correct Price And Quantity As Numbers!');
         connection.end();
         // This is the end of the script/connection for entering the price and quantity.
       }
       else{
-        console.log('\nInventory updated successfully!');
+        console.log('\nYou Inventory Has Updated Successfully! Great Work! :)');
         connection.end(); 
         // This is the end of the script/connection for the inventory.
       }

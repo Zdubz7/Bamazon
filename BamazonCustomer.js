@@ -32,7 +32,7 @@ connection.query('SELECT * FROM Products', function (err, res) {
   if (err) throw err;
 
   // This shows a message to the current user.
-  console.log('Check out our selection...\n');
+  console.log('Check Out Our Vast Selection...\n');
 
   // This section sets up the table header.
   console.log('  ID  |      Product Name      |  Department Name  |   Price  | In Stock');
@@ -69,7 +69,7 @@ connection.query('SELECT * FROM Products', function (err, res) {
   prompt.start();
 
   // This section asks for an items id.
-  console.log('\nWhich item do you want to buy?');
+  console.log('\nWhich Item Do You Prefer To Purchase?');
   prompt.get(['buyItemID'], function (err, result) {
 
     // This section shows an items ID that has been selected to the user.
@@ -77,12 +77,12 @@ connection.query('SELECT * FROM Products', function (err, res) {
     console.log('You selected Item # ' + buyItemID + '.');
 
     // This section then asks for the quantity once the user has selected an item.
-    console.log('\nHow many do you wish to buy?');
+    console.log('\nWhat Quantity Are You Requesting To Purchase?');
     prompt.get(['buyItemQuantity'], function (err, result) {
 
       // This section shows the quantity of an item selected by the user.
       var buyItemQuantity = result.buyItemQuantity;
-      console.log('You selected to buy ' + buyItemQuantity + ' of these.');
+      console.log('You Have Chosen To Buy ' + buyItemQuantity + ' Of This Item.');
 
       // This section checks if the store has enough of the product that the user wanted after the user has placed an order.
       connection.query('SELECT StockQuantity FROM Products WHERE ?', [{
@@ -94,7 +94,7 @@ connection.query('SELECT * FROM Products', function (err, res) {
 
         // This section checks if the ID for a specific item was returned from MySQL
         if (res[0] == undefined) {
-          console.log('Sorry... We found no items with Item ID "' + buyItemID + '"');
+          console.log('Sorry... We Currently Havent Found Any Items With Item ID Number :/ . "' + buyItemID + '"');
 
           // This variable ends the script or connection.
           connection.end();
@@ -129,7 +129,7 @@ connection.query('SELECT * FROM Products', function (err, res) {
               var buyItemPrice = res[0].Price;
               customerTotal = buyItemQuantity * buyItemPrice.toFixed(2);
 
-              console.log('\nYour total is $' + customerTotal + '.');
+              console.log('\nYour Total Wallet Damage Is $' + customerTotal + '.');
 
               // This section finds the department for the item that the user would like to purchase.
               connection.query('SELECT DepartmentName FROM Products WHERE ?', [{
@@ -155,7 +155,7 @@ connection.query('SELECT * FROM Products', function (err, res) {
 
                     // This section handles any errors.
                     if (err) throw err;
-                    console.log('Transaction Completed. Thank you!');
+                    console.log('Your Transaction Has Been Completed. Thank you For Shopping! :)');
                     connection.end();
                     // This is the end of the script/connection.
 
@@ -169,7 +169,7 @@ connection.query('SELECT * FROM Products', function (err, res) {
           }
           // This section shows when there is an insufficient amount of inventory.
           else {
-            console.log('Sorry... We only have ' + bamazonQuantity + ' of those items. Order cancelled.');
+            console.log('I am Sorry... We Currently Have ' + bamazonQuantity + ' Of Those Items Remaining. Order Cancelled :(.');
             connection.end();
             // This section is the end of the script/connection.
           }
